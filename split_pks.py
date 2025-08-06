@@ -7,7 +7,7 @@ out_dir.mkdir(parents=True, exist_ok=True)
 with zipfile.ZipFile(src) as z:
     df = pd.read_csv(z.open('pks.csv'))
 
-df['ligne'] = df['CODE_LIGNE'].astype(str).str.zfill(6)
+df['ligne'] = df['code_ligne'].astype(str).str.zfill(6)
 
 for ligne, grp in df.groupby('ligne'):
     subset = grp[['PK', 'LATITUDE', 'LONGITUDE']].to_dict('records')
@@ -18,10 +18,11 @@ for ligne, grp in df.groupby('ligne'):
 # petite index rapide
 index = {
     l: {
-        'minLat': g.LATITUDE.min(), 'maxLat': g.LATITUDE.max(),
-        'minLon': g.LONGITUDE.min(), 'maxLon': g.LONGITUDE.max()
+        'minLat': g.lat.min(), 'maxLat': g.lat.max(),
+        'minLon': g.lon.min(), 'maxLon': g.lon.max()
     }
     for l, g in df.groupby('ligne')
 }
+
 (out_dir / 'index.json').write_text(json.dumps(index, separators=(',', ':')))
 
