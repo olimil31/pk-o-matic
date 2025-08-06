@@ -1,0 +1,30 @@
+<!doctype html>
+<title>PK-O-Matic</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root { --bg:#fff; --fg:#000; }
+  @media (prefers-color-scheme:dark){
+    :root { --bg:#000; --fg:#fff; }
+  }
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui;display:flex;flex-direction:column;height:100vh;align-items:center;justify-content:center}
+  #pk{font-size:12vw;font-weight:700}
+  #warn{font-size:3vw;color:crimson;margin:.5em 0}
+  #speed{font-size:5vw}
+</style>
+<div id="pk">--</div>
+<div id="warn">PK non garanti / usage indicatif</div>
+<div id="speed">-- km/h</div>
+
+<script>
+navigator.geolocation.watchPosition(
+  pos => {
+    const { latitude:lat, longitude:lon, speed } = pos.coords;
+    // pour l’instant on affiche juste lat/lon
+    document.getElementById('pk').textContent = `Lat ${lat.toFixed(3)}`;
+    document.getElementById('speed').textContent = speed ? `${(speed*3.6).toFixed(0)} km/h` : '';
+  },
+  err => alert('Erreur GPS : ' + err.message),
+  { enableHighAccuracy:true, maximumAge:5000 }
+);
+</script>
+
