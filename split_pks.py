@@ -10,7 +10,8 @@ with zipfile.ZipFile(src) as z:
 df['ligne'] = df['code_ligne'].astype(str).str.zfill(6)
 
 for ligne, grp in df.groupby('ligne'):
-    subset = grp[['PK', 'LATITUDE', 'LONGITUDE']].to_dict('records')
+subset = grp[['pk', 'lat', 'lon']].to_dict('records')
+
     (out_dir / f'{ligne}.json').write_text(
         json.dumps(subset, separators=(',', ':'))
     )
