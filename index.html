@@ -1,31 +1,39 @@
 <!doctype html>
 <title>PK-O-Matic</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { --bg:#fff; --fg:#000; }
-  @media (prefers-color-scheme:dark){
-    :root { --bg:#000; --fg:#fff; }
-  }
-  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui;display:flex;flex-direction:column;height:100vh;align-items:center;justify-content:center}
-  #pk{font-size:12vw;font-weight:700}
-  #warn{font-size:3vw;color:crimson;margin:.5em 0}
-  #speed{font-size:5vw}
-</style>
+<style>…</style>
 <div id="pk">--</div>
 <div id="warn">PK non garanti / usage indicatif</div>
 <div id="speed">-- km/h</div>
 
+<div id="debug" style="position:fixed;bottom:0;left:0;width:100%;background:#0008;color:lime;font-size:3vw;padding:2px;"></div>
 
 <script type="module">
-  alert('loaded');
-  navigator.geolocation.watchPosition(
-    p => alert(`lat=${p.coords.latitude}`),
-    e => alert('GPS err ' + e.message),
-    { enableHighAccuracy: true }
-  );
+  import { nearestPK } from './src/geo/nearest.js';
+
+  const pkEl  = document.getElementById('pk');
+  const spdEl = document.getElementById('speed');
+  const dbgEl = document.getElementById('debug');
+
+  navigator.geolocation.watchPosition(async pos => {
+    const { latitude, longitude, speed } = pos.coords;
+    dbgEl.textContent = `GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+    try {
+      const res = await nearestPK(latitude, longitude);
+      dbgEl.textContent += ` | res=${JSON.stringify(res)}`;
+      if (res) {
+        pkEl.textContent  = `${res.ligne} PK ${res.pk}`;
+        spdEl.textContent = speed ? `${(speed * 3.6).toFixed(0)} km/h` : '';
+      } else {
+        pkEl.textContent = 'Aucune voie';
+      }
+    } catch (e) {
+      dbgEl.textContent += ` | ERR ${e.message}`;
+    }
+  }, err => {
+    dbgEl.textContent = `GPS ERR : ${err.message}`;
+  }, { enableHighAccuracy: true, maximumAge: 5000 });
 </script>
-
-<script type="module" src="/src/main.js?v=2"></script>
-
 
 
