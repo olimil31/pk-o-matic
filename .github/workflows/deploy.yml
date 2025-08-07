@@ -20,6 +20,11 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: Copy JSON to dist
+        run: cp -r data dist/
+
+
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
