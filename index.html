@@ -15,16 +15,7 @@
 <div id="warn">PK non garanti / usage indicatif</div>
 <div id="speed">-- km/h</div>
 
-<script type="module">
-  import { nearestPK } from './src/geo/nearest.js';
+<script type="module" src="/src/main.js"></script>
 
-  navigator.geolocation.watchPosition(async pos => {
-    const { latitude, longitude } = pos.coords;
-    const res = await nearestPK(latitude, longitude);
-    document.getElementById('pk').textContent = res
-      ? `${res.ligne} PK ${res.pk}`
-      : 'Hors ligne SNCF';
-  }, null, { enableHighAccuracy: true, maximumAge: 5000 });
-</script>
 
 
