@@ -1,3 +1,14 @@
+console.clear(); console.log('v2');
+
+alert('script chargé');   // 1er test
+navigator.geolocation.watchPosition(async pos => {
+  alert('GPS : ' + pos.coords.latitude + ', ' + pos.coords.longitude); // 2e test
+  const res = await nearestPK(pos.coords.latitude, pos.coords.longitude);
+  alert('PK résultat : ' + JSON.stringify(res));                       // 3e test
+}, err => alert('GPS erreur : ' + err.message), { enableHighAccuracy: true });
+
+
+
 import { nearestPK } from './geo/nearest.js';
 
 const pkEl  = document.getElementById('pk');
