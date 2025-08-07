@@ -10,32 +10,28 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
 
       - run: pip install pandas
       - run: python split_pks.py          # génère data/pks/*.json
+
       - run: npm ci
       - run: npm run build
 
-      - name: Copy JSON to dist
-        run: cp -r data dist/
-
-
+      - name: Copy JSON & src to dist
+        run: |
+          cp -r data dist/
+          cp -r src  dist/
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: dist
-          keep_files: true                # garde les JSON
-
-      - name: Commit & push new JSON
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/pks
-          git diff --cached --quiet || (git commit -m "update pks_xxx.json" && git push)
+          keep_files: true
 
