@@ -15,6 +15,16 @@
 <div id="warn">PK non garanti / usage indicatif</div>
 <div id="speed">-- km/h</div>
 
+
+<script type="module">
+  alert('loaded');
+  navigator.geolocation.watchPosition(
+    p => alert(`lat=${p.coords.latitude}`),
+    e => alert('GPS err ' + e.message),
+    { enableHighAccuracy: true }
+  );
+</script>
+
 <script type="module" src="/src/main.js?v=2"></script>
 
 
