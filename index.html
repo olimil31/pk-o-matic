@@ -24,7 +24,35 @@ navigator.geolocation.watchPosition(
   pos => {
     const { latitude, longitude, speed } = pos.coords;
     document.getElementById('debug').textContent = `GPS: ${latitude}, ${longitude}`;
-    document.getElementById('pk').textContent  = `Lat ${latitude.toFixed(3)}`;
+    // approximation rapide : on prend la ligne la plus proche (voir plus tard la margin box)
+fetch('/data/pks/index.json')
+  .then(r => r.json())
+  .then(index => {
+    let bestLine = null;
+    let bestDist = 1e9;
+    for (const [l, b] of Object.entries(index)) {
+      const d = Math.abs(latitude - (b.minLat + b.maxLat) / 2) +
+                Math.abs(longitude - (b.minLon + b.maxLon) / 2);
+      if (d < bestDist) { bestDist = d; bestLine = l; }
+    }
+    if (bestLine) {
+      fetch(`/data/pks/${bestLine}.json`)
+        .then(r => r.json())
+        .then(pts => {
+          // approximation : PK le plus proche
+          let bestPK = pts[0].pk;
+          let bestD2 = 1e9;
+          for (const p of pts) {
+            const d2 = Math.abs(latitude - p.lat) + Math.abs(longitude - p.lon);
+            if (d2 < bestD2) { bestD2 = d2; bestPK = p.pk; }
+          }
+          document.getElementById('pk').textContent = `${bestLine} PK ${bestPK}`;
+        });
+    } else {
+      document.getElementById('pk').textContent = 'Hors ligne SNCF';
+    }
+  });
+
     document.getElementById('speed').textContent = speed ? `${(speed*3.6).toFixed(0)} km/h` : '';
   },
   err => { document.getElementById('debug').textContent = 'GPS ERR: ' + err.message; },
