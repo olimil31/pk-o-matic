@@ -1,3 +1,11 @@
+// test immédiat
+alert('Script chargé');
+navigator.geolocation.getCurrentPosition(
+  p => alert(`GPS OK : ${p.coords.latitude}, ${p.coords.longitude}`),
+  e => alert(`GPS ERR : ${e.message}`)
+);
+
+
 console.clear(); console.log('v2');
 
 alert('script chargé');   // 1er test
